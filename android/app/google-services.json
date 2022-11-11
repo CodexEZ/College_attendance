@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "816824832537",
+    "project_id": "college-attendance-syste-a9344",
+    "storage_bucket": "college-attendance-syste-a9344.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:816824832537:android:3fd960cf5b44112622d088",
+        "android_client_info": {
+          "package_name": "com.example.leave_application"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "816824832537-amilsls9tre79rahovic7g3r4e2k2jmh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdGfw67NMjLaCdmESjkidC819xtx6KRFM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "816824832537-amilsls9tre79rahovic7g3r4e2k2jmh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
