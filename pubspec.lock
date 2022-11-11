@@ -378,6 +378,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.2"
+  wifi_scan:
+    dependency: "direct main"
+    description:
+      name: wifi_scan
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.0+1"
   win32:
     dependency: transitive
     description:

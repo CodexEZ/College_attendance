@@ -136,6 +136,18 @@ class _LoginPageState extends State<LoginPage> {
                       )
                   )
                 ],
+              ),
+              SizedBox(height: 10,),
+              TextButton(
+                  onPressed: (){},
+                  child: Text(
+                      "Forgot Password?",
+                    style: GoogleFonts.lato(
+                      textStyle:TextStyle(
+                        color: Colors.cyan,
+                      )
+                    ),
+                  )
               )
             ],
           ),
