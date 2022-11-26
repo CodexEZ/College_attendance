@@ -30,27 +30,6 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             children: [
               const SizedBox(height: 100,),
-              Container(
-                height: 50,
-                child: AnimatedTextKit(
-                    animatedTexts:[
-                      TyperAnimatedText(
-                        "HELLO!",
-                        textStyle: GoogleFonts.comfortaa(textStyle: const TextStyle(color: Colors.white, fontSize: 30)),
-                        speed: const Duration(milliseconds: 200)
-                    ),
-                      TyperAnimatedText(
-                          "HOLA",
-                          textStyle: GoogleFonts.sacramento(textStyle: const TextStyle(color: Colors.white, fontSize: 30)),
-                          speed: const Duration(milliseconds: 200)
-                      )
-          ],
-                  totalRepeatCount:2,
-                  pause: const Duration(milliseconds: 100),
-                  displayFullTextOnTap: true,
-                  stopPauseOnTap: false,
-                ),
-              ),
               const SizedBox(height: 100,),
               Text(
                 "LOGIN",
@@ -91,6 +70,7 @@ class _LoginPageState extends State<LoginPage> {
                   child:  Padding(
                     padding: EdgeInsets.all(4),
                     child: TextField(
+                      obscureText: true,
                       controller: passwordController,
                       decoration: InputDecoration(
                         hintText: "Password"

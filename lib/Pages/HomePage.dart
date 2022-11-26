@@ -2,6 +2,9 @@
 
 
 
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:leave_application/Pages/sidemenu.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,6 +12,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nearby_connections/nearby_connections.dart';
+import 'package:sidebarx/sidebarx.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -21,6 +25,7 @@ class _HomePageState extends State<HomePage> {
   String? id = FirebaseAuth.instance.currentUser?.email;
   final Strategy strategy = Strategy.P2P_STAR;
   Map<String, ConnectionInfo> endpointMap = Map();
+  int button = 0;
 
   String? tempFileUri; //reference to the file currently being transferred
   Map<int, String> map =
@@ -28,16 +33,12 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       backgroundColor: Colors.black,
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.power_settings_new),
-        onPressed: (){
-          FirebaseAuth.instance.signOut();
-        },
-      ),
+      drawer: SideBar(),
       appBar: AppBar(
         backgroundColor: Colors.black,
-        title:Text("Permissions ->"),
+
         actions: [
           IconButton(
             icon: Icon(Icons.gps_fixed),
@@ -121,75 +122,99 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Expanded(child: SizedBox()),
                 ElevatedButton(
-                  child: Text("Start Discovery"),
+                  style: ElevatedButton.styleFrom(
+                    shape: CircleBorder(),
+                    padding: EdgeInsets.all(40),
+                    primary: button==0?Colors.green:Colors.red
+                  ),
+                  child: Icon(button==0?Icons.waving_hand:Icons.front_hand, size: 70,),
                   onPressed: () async {
-                    try {
-                      bool a = await Nearby().startDiscovery(
-                        id!,
-                        strategy,
-                        onEndpointFound: (id, name, serviceId) {
-                          // show sheet automatically to request connection
-                          showModalBottomSheet(
-                            context: context,
-                            builder: (builder) {
-                              return Center(
-                                child: Column(
-                                  children: <Widget>[
-                                    Text("id: " + id),
-                                    Text("Name: " + name),
-                                    Text("ServiceId: " + serviceId),
-                                    ElevatedButton(
-                                      child: Text("Request Connection"),
-                                      onPressed: () {
-                                        FirebaseFirestore.instance.collection('std').doc().set({
-                                          "attendance":id,
-                                          "check":true
-                                        }
-                                        );
-                                        Navigator.pop(context);
-                                        Nearby().requestConnection(
-                                          "FUCK",
-                                          id,
-                                          onConnectionInitiated: (id, info) {
-                                            onConnectionInit(id, info);
+                    if(button==0){
+                      try {
+                        bool a = await Nearby().startDiscovery(
+                          id!,
+                          strategy,
+                          onEndpointFound: (id, name, serviceId) {
+                            // show sheet automatically to request connection
+                            showModalBottomSheet(
+                              backgroundColor: Colors.blue[900],
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(50)
+                              ),
+                              context: context,
+                              builder: (builder) {
+                                return Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 20.0),
+                                    child: Column(
+                                      children: <Widget>[
+                                        // Text("id: " + id),
+                                        Text("Name: " + name, style: GoogleFonts.roboto(textStyle: TextStyle(
+                                          fontSize: 30,
+                                          color: Colors.white,
+
+                                        )),),
+                                        // Text("ServiceId: " + serviceId),
+                                        SizedBox(height: 10,),
+                                        ElevatedButton(
+                                          child: Text("Mark Present"),
+                                          onPressed: () {
+                                            FirebaseFirestore.instance.collection('std').doc().set({
+                                              "attendance":name,
+                                              "check":true
+                                            }
+                                            );
+                                            Navigator.pop(context);
+                                            Nearby().requestConnection(
+                                              "Teacher",
+                                              id,
+                                              onConnectionInitiated: (id, info) {
+                                                onMarked(id, info);
+                                              },
+                                              onConnectionResult: (id, status) {
+                                                showSnackbar(status);
+                                              },
+                                              onDisconnected: (id) {
+                                                setState(() {
+                                                  endpointMap.remove(id);
+                                                });
+                                                showSnackbar(
+                                                    "Disconnected from: ${endpointMap[id]!.endpointName}, id $id");
+                                              },
+                                            );
                                           },
-                                          onConnectionResult: (id, status) {
-                                            showSnackbar(status);
-                                          },
-                                          onDisconnected: (id) {
-                                            setState(() {
-                                              endpointMap.remove(id);
-                                            });
-                                            showSnackbar(
-                                                "Disconnected from: ${endpointMap[id]!.endpointName}, id $id");
-                                          },
-                                        );
-                                      },
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              );
-                            },
-                          );
-                        },
-                        onEndpointLost: (id) {
-                          showSnackbar(
-                              "Lost discovered Endpoint: ${endpointMap[id]!.endpointName}, id $id");
-                        },
-                      );
-                      showSnackbar("DISCOVERING: " + a.toString());
-                    } catch (e) {
-                      showSnackbar(e);
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                          onEndpointLost: (id) {
+                            showSnackbar(
+                                "Lost discovered Endpoint: ${endpointMap[id]!.endpointName}, id $id");
+                          },
+                        );
+                        showSnackbar("DISCOVERING: " + a.toString());
+                      } catch (e) {
+                        showSnackbar(e);
+                      }
+                      setState((){button = 1;});
+                    }
+                    else if(button == 1){
+                      await Nearby().stopDiscovery();
+                      setState((){button = 0;});
                     }
                   },
                 ),
-                Expanded(child: SizedBox()),
-                ElevatedButton(
-                  child: Text("Stop Discovery"),
-                  onPressed: () async {
-                    await Nearby().stopDiscovery();
-                  },
-                ),
+                // Expanded(child: SizedBox()),
+                // ElevatedButton(
+                //   child: Text("Stop Discovery"),
+                //   onPressed: () async {
+                //     await Nearby().stopDiscovery();
+                //   },
+                // ),
                 Expanded(child: SizedBox()),
               ],
             ),
@@ -212,6 +237,9 @@ class _HomePageState extends State<HomePage> {
 
     showSnackbar("Moved file:" + b.toString());
     return b;
+  }
+  void onMarked (String id, ConnectionInfo info)async{
+    await Nearby().rejectConnection(id);
   }
   void onConnectionInit(String id, ConnectionInfo info) {
     showModalBottomSheet(
